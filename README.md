@@ -2,6 +2,7 @@ Hello, JCWD-2702!
 
 + How to Install Typescript?
     npm i -g typescript
+    
     npm i -g ts-node
 
     - Inside Folder "intro-typescript", Type on Terminal:
