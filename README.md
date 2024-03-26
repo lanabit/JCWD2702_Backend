@@ -8,7 +8,7 @@ Hello, JCWD-2702!
 
     - Inside Folder "intro-typescript", Type on Terminal:
 
-        tsc --init
+            tsc --init
     
   - Setup "tsconfig.json" & Uncomment this Code: "outDir": "./bundle",
   - Running TS:
