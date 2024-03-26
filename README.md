@@ -35,5 +35,5 @@ Hello, JCWD-2702!
             "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
         },
 
-    - How to Running?
-        npm run dev
+  - How to Running?
+            npm run dev
