@@ -18,7 +18,7 @@ Hello, JCWD-2702!
 + How to Setup Express Typescript?
         npm init --yes
 
-        npm i -D typescript @types/express @types/node
+        npm i -D typescript express @types/express @types/node
 
         npm i -D concurrently nodemon
 
