@@ -1,21 +1,7 @@
 Hello, JCWD-2702!
 
-+ How to Install Typescript?
-
-        npm i -g typescript
-    
-        npm i -g ts-node
-
-    - Inside Folder "intro-typescript", Type on Terminal:
-
-            tsc --init
-    
-  - Setup "tsconfig.json" & Uncomment this Code: "outDir": "./bundle",
-  - Running TS:
-  
-        ts-node filename.ts
-
 + How to Setup Express Typescript?
+        
         npm init --yes
 
         npm i -D typescript express @types/express @types/node
