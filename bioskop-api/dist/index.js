@@ -20,13 +20,37 @@ app.post('/register', (req, res) => {
         const findUser = usersJSON.filter((val) => val.username === userBody.username || val.email === userBody.email);
         if (findUser.length > 0)
             return res.send('Email or Username Already Registered!');
-        usersJSON.push(Object.assign({}, req.body));
+        const uid = Date.now();
+        usersJSON.push(Object.assign({ uid }, userBody));
         (0, fs_1.WriteFile)(db);
         // Step03. Send Response
-        res.send('Register Success!');
+        res.send({
+            uid,
+            username: userBody.username,
+            email: userBody.email
+        });
     }
     catch (error) {
         console.log(error);
+    }
+});
+app.post('/auth', (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const db = (0, fs_1.ReadFile)();
+        const usersJSON = db.users;
+        const findUser = usersJSON.filter(val => (val.username === username || val.email === username)
+            && val.password === password); // [{}]
+        if (findUser.length === 0)
+            throw new Error('Username & Password Incorrect!');
+        return res.send({
+            uid: findUser[0].uid,
+            username: findUser[0].username,
+            role: findUser[0].role
+        });
+    }
+    catch (error) {
+        res.send(error.message);
     }
 });
 app.listen(port, () => {

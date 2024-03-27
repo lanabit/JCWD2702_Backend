@@ -6,7 +6,7 @@ const app: Express = express();
 app.use(express.json())
 const port = 5000;
 
-import { IUser } from './types';
+import { IUser, IUserJSON } from './types';
 
 // Register
 app.post('/register', (req: Request, res: Response) => {
@@ -16,21 +16,50 @@ app.post('/register', (req: Request, res: Response) => {
         
         // Step02. Manipulation
         const db = ReadFile()
-        const usersJSON: IUser[] = db.users
+        const usersJSON: IUserJSON[] = db.users
         const findUser = usersJSON.filter((val: IUser) => 
             val.username === userBody.username || val.email === userBody.email
         )
         
         if(findUser.length > 0) return res.send('Email or Username Already Registered!')
 
-        usersJSON.push({...req.body})
+        const uid = Date.now()
+
+        usersJSON.push({uid, ...userBody})
 
         WriteFile(db)
 
         // Step03. Send Response
-        res.send('Register Success!')
+        res.send({
+            uid, 
+            username: userBody.username, 
+            email: userBody.email
+        })
     } catch (error) {
         console.log(error)
+    }
+})
+
+app.post('/auth', (req: Request, res: Response) => {
+    try {
+        const { username, password } = req.body 
+
+        const db = ReadFile()
+        const usersJSON: IUserJSON[] = db.users
+
+        const findUser: IUserJSON[] = usersJSON.filter(val => 
+            (val.username === username || val.email === username) 
+            && val.password === password) // [{}]
+        
+        if(findUser.length === 0) throw new Error('Username & Password Incorrect!')
+
+        return res.send({
+            uid: findUser[0].uid, 
+            username: findUser[0].username, 
+            role: findUser[0].role
+        })
+    } catch (error: any) {
+        res.send(error.message)
     }
 })
 
