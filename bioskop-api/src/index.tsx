@@ -63,6 +63,58 @@ app.post('/auth', (req: Request, res: Response) => {
     }
 })
 
+app.post('/transactions', (req: Request, res: Response) => {
+    try {
+        const { usersid }: { usersId: string } = req.headers
+        const { moviesId, time, total_seat, date }: 
+        { moviesId: number, time: string, total_seat: number, date: string } 
+        = req.body
+
+        const db = ReadFile()
+        const usersJSON: IUserJSON[] = db.users
+        const moviesJSON: any[] = db.movies
+        const transactionJSON: any[] = db.transactions
+
+        const findUser = usersJSON.some(val => val.uid === Number(usersid))
+        
+        if(!findUser) return res.send(`UsersId ${usersid} Not Found!`)
+
+        const findMovie = moviesJSON.filter(val => val.id === moviesId && val.show_times.includes(time) && val.release_date < date)
+
+        if(findMovie.length === 0) throw new Error('Movie Not Found')
+
+        let bookSeat = 0
+        transactionJSON.map(val => {
+            if(val.moviesId === moviesId && val.time === time && val.date === date) bookSeat += val.total_seat
+        })
+
+        let availableSeat = findMovie[0].total_seat - bookSeat
+        if(availableSeat < total_seat) throw new Error('Seat Not Available!')
+
+        // Validation Weekdays/Weekend
+        const isWeekend = new Date(date).getDay() === 0 || new Date(date).getDay() === 6? true : false
+        let totalPrice = 0
+        if(isWeekend){
+            totalPrice = findMovie[0].price[0].weekend * Number(total_seat)
+        }else{
+            totalPrice = findMovie[0].price[0].weekdays * Number(total_seat)
+        }
+
+        transactionJSON.push({
+            ...req.body
+        })
+
+        WriteFile(db)
+
+        res.send({
+            ...req.body, 
+            price: totalPrice
+        })
+    } catch (error: any) {
+        res.send(error.message)
+    }
+})
+
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
