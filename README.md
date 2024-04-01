@@ -1,6 +1,6 @@
 Hello, JCWD-2702!
 
-+ How to Setup Express Typescript?
++ How to Setup Express Typescript with MySQL as Database?
         
         npm init --yes
 
