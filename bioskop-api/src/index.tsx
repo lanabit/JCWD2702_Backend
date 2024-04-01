@@ -65,7 +65,7 @@ app.post('/auth', (req: Request, res: Response) => {
 
 app.post('/transactions', (req: Request, res: Response) => {
     try {
-        const { usersid }: { usersId: string } = req.headers
+        const { usersid} = req.headers as { usersid: string }
         const { moviesId, time, total_seat, date }: 
         { moviesId: number, time: string, total_seat: number, date: string } 
         = req.body
@@ -112,6 +112,66 @@ app.post('/transactions', (req: Request, res: Response) => {
         })
     } catch (error: any) {
         res.send(error.message)
+    }
+})
+
+app.post('/admin/movies', (req: Request, res: Response) => {
+    try {
+        const { usersid } = req.headers as { usersid: string }
+
+        const db = ReadFile()
+        const usersJSON: IUserJSON[] = db.users
+        const moviesJSON: any[] = db.movies
+
+        const findUser = usersJSON.filter(val => val.uid === Number(usersid))
+        
+        if(findUser[0].role !== 'admin') throw new Error('Authorization Failed! Only Admin Can Create Movie!')
+        
+        moviesJSON.push({
+            id: moviesJSON.length === 0? 1 : moviesJSON[moviesJSON.length-1].id + 1, 
+            ...req.body
+        })
+
+        WriteFile(db)
+
+        res.send('Create Movie Success!')
+    } catch (error) {
+        
+    }
+})
+
+app.get('/movies', (req: Request, res: Response) => {
+    try {
+        const { status, time, date } = req.query 
+
+        const db = ReadFile()
+        const moviesJSON: any[] = db.movies
+        const transactionsJSON: any[] = db.transactions
+
+        let findMovies = moviesJSON.map((val) => {
+            const movieSelected = {
+                ...val, 
+                seatAvailable: val.total_seat
+            }
+            
+            transactionsJSON.map((value) => {
+                if(val.id === value.moviesId && value.date === date && value.time === time){
+                    movieSelected.seatAvailable = movieSelected.seatAvailable - value.total_seat
+                }
+            })
+
+            if((date && time)) return movieSelected
+            
+            return {...val}
+        })
+
+        if(status){
+            findMovies = findMovies.filter(val => val.status === status.replace("%", " "))
+        }
+
+        res.send(findMovies)
+    } catch (error) {
+        
     }
 })
 

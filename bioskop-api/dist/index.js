@@ -92,6 +92,47 @@ app.post('/transactions', (req, res) => {
         res.send(error.message);
     }
 });
+app.post('/admin/movies', (req, res) => {
+    try {
+        const { usersid } = req.headers;
+        const db = (0, fs_1.ReadFile)();
+        const usersJSON = db.users;
+        const moviesJSON = db.movies;
+        const findUser = usersJSON.filter(val => val.uid === Number(usersid));
+        if (findUser[0].role !== 'admin')
+            throw new Error('Authorization Failed! Only Admin Can Create Movie!');
+        moviesJSON.push(Object.assign({ id: moviesJSON.length === 0 ? 1 : moviesJSON[moviesJSON.length - 1].id + 1 }, req.body));
+        (0, fs_1.WriteFile)(db);
+        res.send('Create Movie Success!');
+    }
+    catch (error) {
+    }
+});
+app.get('/movies', (req, res) => {
+    try {
+        const { status, time, date } = req.query;
+        const db = (0, fs_1.ReadFile)();
+        const moviesJSON = db.movies;
+        const transactionsJSON = db.transactions;
+        let findMovies = moviesJSON.map((val) => {
+            const movieSelected = Object.assign(Object.assign({}, val), { seatAvailable: val.total_seat });
+            transactionsJSON.map((value) => {
+                if (val.id === value.moviesId && value.date === date && value.time === time) {
+                    movieSelected.seatAvailable = movieSelected.seatAvailable - value.total_seat;
+                }
+            });
+            if ((date && time))
+                return movieSelected;
+            return Object.assign({}, val);
+        });
+        if (status) {
+            findMovies = findMovies.filter(val => val.status === status.replace("%", " "));
+        }
+        res.send(findMovies);
+    }
+    catch (error) {
+    }
+});
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
