@@ -1,28 +1,24 @@
-import express, { Express, Request, Response } from 'express';
-
-// IMPORT CONNECTION & SETUP PROMISFY
-import db from './connection';
-import util from 'util';
-const query: any = util.promisify(db.query).bind(db);
+import express, { Express, NextFunction, Request, Response } from 'express';
+import routers from './routers';
 
 const app: Express = express();
-// Body Parser: Mengambil Req.Body dari client
-app.use(express.json())
+
 const port = 5000;
 
-app.get('/passangers', async(req: Request, res: Response): Promise<void> => {
-  try {
-    const findPassangers = await query('SELECT * FROM passangers')
+app.use(routers)
 
-    res.status(200).send({
-      error: false, 
-      message: 'Success', 
-      data: findPassangers
-    })
-  } catch (error) {
-    console.log(error)
-  }
-})
+// CENTRALIZED ERROR
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(err.message)
+  console.log(err.status)
+  res
+  .status(err.status || 500)
+  .send({
+    error: true, 
+    message: err.message || 'Error',
+    data: {}
+  })
+}) 
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
@@ -45,6 +41,6 @@ app.listen(port, () => {
 //    Requests: /passangers/survived/sex
 
 // 4. User Dapat Melihat List Penumpang yang Selamat dan Berada di Class yang Ditentukan oleh User
-//    Requests: /passangers/survived?class=1
+//    Requests: /passangers?Survived=1&Pclass=1
 //              OR
-//              /passangers/survived?class=0
+//              /passangers?Survived=1&Pclass=2
