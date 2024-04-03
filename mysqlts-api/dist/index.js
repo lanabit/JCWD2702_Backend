@@ -10,8 +10,6 @@ const port = 5000;
 app.use(routers_1.default);
 // CENTRALIZED ERROR
 app.use((err, req, res, next) => {
-    console.log(err.message);
-    console.log(err.status);
     res
         .status(err.status || 500)
         .send({

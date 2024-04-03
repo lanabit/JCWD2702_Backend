@@ -9,8 +9,6 @@ app.use(routers)
 
 // CENTRALIZED ERROR
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.log(err.message)
-  console.log(err.status)
   res
   .status(err.status || 500)
   .send({
