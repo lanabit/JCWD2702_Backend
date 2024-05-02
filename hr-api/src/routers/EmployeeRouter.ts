@@ -1,11 +1,29 @@
-import { Router } from 'express';
+import { Router } from "express";
 
 // Define Router
-const router = Router()
+const router = Router();
 
 // Import Controller
-import {clockin} from '../controllers/EmployeeController';
+import {
+  clockin,
+  clockout,
+  getAllEmployees,
+  leaveRequest,
+  employeePosition,
+  employeeShiftandPosition,
+  createProfile,
+  updateProfile,
+} from "../controllers/EmployeeController";
 
-router.post('/', clockin)
+import { tokenVerify } from "../helpers/token";
+import { uploader } from "../middleware/uploader";
 
-export default router
+router.get("/all", getAllEmployees);
+router.post("/clockin", tokenVerify, clockin);
+router.put("/clockout", clockout);
+router.post("/leave-request", leaveRequest);
+router.get("/position", employeePosition);
+router.get("/shift-position", employeeShiftandPosition);
+router.post("/profile", tokenVerify, uploader, createProfile);
+router.put("/profile", tokenVerify, uploader, updateProfile);
+export default router;

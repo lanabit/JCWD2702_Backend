@@ -1,7 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import BottomNavigator from "~/components/BottomNavigator";
-
+import TanstackProvider from "~/providers/TanstackProvider";
+import { ReduxProvider } from "~/providers/ReduxProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -12,11 +13,19 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className='flex justify-center'>
-        <div className='container w-[500px] min-w-[500px] max-w-[500px]'>
-          {children}
-          <BottomNavigator />
-        </div>
+      <body className="flex justify-center">
+        <ReduxProvider>
+          <TanstackProvider>
+            <div
+              className=/* "" */ {
+                "container w-[500px] min-w-[500px] max-w-[500px]"
+              }
+            >
+              {children}
+              <BottomNavigator />
+            </div>
+          </TanstackProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

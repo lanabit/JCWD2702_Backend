@@ -10,12 +10,21 @@ app.use((0, cors_1.default)());
 const port = 5000;
 // Import index.ts /routers
 const routers_1 = __importDefault(require("./routers")); // Menunjuk index.ts
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     // Req: Digunakan Untuk Mengambil Resource dari Client
     // Res: Digunakan Untuk Mengirim Response Menuju Client
-    res.send('<h1>Welcome to Tracker Expenses API</h1>');
+    res.send("<h1>Welcome to Tracker Expenses API</h1>");
 });
 app.use(routers_1.default);
+app.use((err, req, res, next) => {
+    const statusCode = err.status || 500;
+    const statusMessage = err.message || "Error";
+    res.status(statusCode).send({
+        error: true,
+        message: statusMessage,
+        data: null,
+    });
+});
 app.listen(port, () => {
     console.log(`[SERVER] Server Running on Port ${port}`);
 });

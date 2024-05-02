@@ -28,9 +28,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
 // Define Router
-const bebas = (0, express_1.Router)();
-bebas.use(express_1.default.json()); // Body Parser
+const router = (0, express_1.Router)();
+router.use(express_1.default.json()); // Body Parser
+router.use("*/image", express_1.default.static("src/public/image"));
 // Import Admin Router
-const LibraryRouter_1 = __importDefault(require("./LibraryRouter"));
-bebas.use('/library', LibraryRouter_1.default);
-exports.default = bebas;
+const EmployeeRouter_1 = __importDefault(require("./EmployeeRouter"));
+const HRRouter_1 = __importDefault(require("./HRRouter"));
+const AuthRouter_1 = __importDefault(require("./AuthRouter"));
+router.use("/employee", EmployeeRouter_1.default);
+router.use("/hr", HRRouter_1.default);
+router.use("/auth", AuthRouter_1.default);
+exports.default = router;
